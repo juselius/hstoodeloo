@@ -17,5 +17,8 @@ main = do
         post "/" todoHandler
         get "/all" allTodo
         get "/due" dueTodo
+        get "/todo.js" $ do
+            setHeader "Content-type" "text/javascript"
+            file "src/Client/todo.js"
 
 
