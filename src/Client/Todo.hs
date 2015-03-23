@@ -15,24 +15,47 @@ class Eventable a
 instance Eventable WebSocket
 instance Eventable Element
 
+data Todo = Todo {
+      task :: String
+    , due :: String
+    } deriving (Show)
+
 addEntry :: a -> Fay ()
 addEntry _ = do
     task     <- getElementById "todo"
     due      <- getElementById "duedate"
-    todoList <- getElementById "todoList"
+    let due' = (elementValue due) ++ " 23:59:59 CET"
+    let todo = Todo (elementValue task) due'
+    storeEntry todo
+    viewEntry todo
 
+storeEntry :: Todo -> Fay ()
+storeEntry todo = do
+    infoBox <- getElementById "infoBox"
+    conn <- newWebSocket "ws://localhost:8080"
+    addEventListener conn "onopen" $ \_ ->
+        conn `send` show todo
+    addEventListener conn "onmessage" $ \e ->
+        setInnerHTML infoBox (messageData e)
+
+viewEntry :: Todo -> Fay ()
+viewEntry (Todo task due)  = do
+    taskBox  <- getElementById "todo"
+    todoList <- getElementById "todoList"
     tr <- createElement "tr"
     td1 <- createElement "td"
     td2 <- createElement "td"
-    v1 <- createTextNode $ elementValue task
-    v2 <- createTextNode $ elementValue due
-    createTextNode $ elementValue task
+    v1 <- createTextNode $ task
+    v2 <- createTextNode $ due
     appendChild td1 v1
     appendChild td2 v2
     appendChild tr td1
     appendChild tr td2
     appendChild todoList tr
-    clearValue task
+    clearValue taskBox
+
+setInnerHTML :: Element -> String -> Fay ()
+setInnerHTML = ffi "%1['innerHTML'] = %2"
 
 getElementById :: String -> Fay Element
 getElementById = ffi "document.getElementById(%1)"
@@ -57,3 +80,9 @@ newWebSocket = ffi "new WebSocket(%1)"
 
 addEventListener :: Eventable a => a -> String -> (Event -> Fay ()) -> Fay ()
 addEventListener = ffi "%1[%2] = %3"
+
+messageData :: Event -> String
+messageData = ffi "%1.data"
+
+send :: WebSocket -> String -> Fay ()
+send = ffi "%1.send(%2)"

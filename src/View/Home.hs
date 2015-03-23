@@ -15,7 +15,6 @@ import Text.Blaze.Html.Renderer.Text
 import qualified Text.Blaze.Html5.Attributes as A
 import qualified Web.Scotty as S
 
-
 homeView :: S.ActionM ()
 homeView = do
     now' <- liftIO $ getCurrentTime
@@ -26,6 +25,9 @@ homeView = do
         todo now
         hr
         todoList
+        hr
+        p "Server response: "
+        div ! A.class_ "infoBox: " $ "pending"
 
 page :: Html -> Html
 page bdy = docTypeHtml $ do

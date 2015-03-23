@@ -27,7 +27,10 @@ Todo
 instance FromJSON Todo where
     parseJSON (Object v) = Todo <$>
         v .: "task" <*>
-        v .: "due"
+        fmap toTime (v .: "due")
+        where
+            toTime :: String -> UTCTime
+            toTime s = read s :: UTCTime
     parseJSON _ = mzero
 
 dbName :: FilePath
