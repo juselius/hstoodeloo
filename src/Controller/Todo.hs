@@ -25,7 +25,7 @@ todoHandler = do
     S.html . renderHtml $ page t d
     where
         dateToTime :: String -> UTCTime
-        dateToTime x = read $ x ++ " 00:00:00 CET"
+        dateToTime x = read $ x ++ " 23:59:59 CET"
 
 page :: String -> String -> Html
 page t d = docTypeHtml $ do

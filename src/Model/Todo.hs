@@ -51,5 +51,5 @@ getTodo :: IO [Todo]
 getTodo = do
     now <- getCurrentTime
     runSqlite db $ do
-        t <- selectList [TodoDue >. now] []
+        t <- selectList [TodoDue >=. now] []
         return $ map (\(Entity _ x) -> x) t

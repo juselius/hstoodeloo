@@ -5,6 +5,7 @@ module Main where
 import Web.Scotty
 
 import View.Home
+import View.Todo
 import Controller.Todo
 import Model.Todo
 
@@ -14,4 +15,7 @@ main = do
     scotty 3000 $ do
         get  "/" homeView
         post "/" todoHandler
+        get "/all" allTodo
+        get "/due" dueTodo
+
 
